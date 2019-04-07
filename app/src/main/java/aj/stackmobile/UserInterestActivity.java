@@ -107,8 +107,17 @@ public class UserInterestActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String some = tagname.get(position);
+                Boolean present = false;
+                for(int i=0;i<selected.size();i++){
+                    if(selected.get(i).equals(some))
+                      present = true;
+                }
+                if(present==false){
                 selected.add(some);
-                recyclerAdapter.notifyItemInserted(selected.size()-1);
+                recyclerAdapter.notifyItemInserted(selected.size()-1);}
+                else{
+                    Toast.makeText(getApplicationContext(),"Already Added Tag",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
