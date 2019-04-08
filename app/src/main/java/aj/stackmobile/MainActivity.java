@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String client_id = "14818";
+    private String client_id = "ADD YOUR ID";
     private String scope = "no_expiry";
     private String redirect_uri = "https://stackexchange.com/oauth/login_success";
     private Button button;
