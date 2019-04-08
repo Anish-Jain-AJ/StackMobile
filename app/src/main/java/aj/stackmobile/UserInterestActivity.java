@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class UserInterestActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
     public Button btn;
 
+    public ProgressBar pb;
+
 
 
     @Override
@@ -39,6 +42,10 @@ public class UserInterestActivity extends AppCompatActivity {
 
         final ArrayList<String> tagname = new ArrayList<>();
         final ArrayList<String> selected = new ArrayList<>();
+
+        pb= findViewById(R.id.pb2);
+
+        pb.setVisibility(View.VISIBLE);
 
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -87,6 +94,7 @@ public class UserInterestActivity extends AppCompatActivity {
                 else{
                     Toast.makeText(getApplicationContext(),"Some Error Occured",Toast.LENGTH_SHORT).show();
                 }
+                pb.setVisibility(View.GONE);
             }
 
             @Override
@@ -107,8 +115,17 @@ public class UserInterestActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String some = tagname.get(position);
+                Boolean present = false;
+                for(int i=0;i<selected.size();i++){
+                    if(selected.get(i).equals(some))
+                      present = true;
+                }
+                if(present==false){
                 selected.add(some);
-                recyclerAdapter.notifyItemInserted(selected.size()-1);
+                recyclerAdapter.notifyItemInserted(selected.size()-1);}
+                else{
+                    Toast.makeText(getApplicationContext(),"Already Added Tag",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

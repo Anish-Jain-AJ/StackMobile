@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class QuestionListActivity extends AppCompatActivity {
     Api api;
 
     public static MyAppDatabase myAppDatabase;
+    private ProgressBar pb;
 
 
 
@@ -110,6 +112,8 @@ public class QuestionListActivity extends AppCompatActivity {
         nvDrawer = findViewById(R.id.nview);
         recyclerView = findViewById(R.id.rv);
 
+        pb = findViewById(R.id.pb);
+
 
         layoutManager = new GridLayoutManager(this,1);
         recyclerView.setLayoutManager(layoutManager);
@@ -119,6 +123,8 @@ public class QuestionListActivity extends AppCompatActivity {
         nvDrawer.getMenu().findItem(R.id.nav_second).setTitle(s2);
         nvDrawer.getMenu().findItem(R.id.nav_third).setTitle(s3);
         nvDrawer.getMenu().findItem(R.id.nav_fourth).setTitle(s4);
+
+        pb.setVisibility(View.VISIBLE);
 
         onDisplay(nvDrawer.getMenu().findItem(R.id.nav_first).toString());
 
@@ -171,6 +177,10 @@ public class QuestionListActivity extends AppCompatActivity {
 
     public void onDisplay(final String tag){
 
+        layoutManager = new GridLayoutManager(this,1);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+
         Call<QuestionObject> callq = api.getAnswers(FIRST_PAGE,PAGE_SIZE,SITE_NAME,tag);
         callq.enqueue(new Callback<QuestionObject>() {
             @Override
@@ -207,12 +217,14 @@ public class QuestionListActivity extends AppCompatActivity {
 
                     }
                 });
+
+                pb.setVisibility(View.GONE);
                 recyclerView.setAdapter(rcn);
                 Toast.makeText(getApplicationContext(),"First Page",Toast.LENGTH_SHORT).show();
-
-
-
-
+                page_number=1;
+                isLoading = true;
+                pastVisibleItems=0;visibleItemCount=0;totalItemCount=0;previous_total = 0;
+                view_threshold = 10;
             }
 
             @Override
@@ -255,10 +267,11 @@ public class QuestionListActivity extends AppCompatActivity {
 
     }
 
-    private void performPagination(String tag){
+    private void performPagination(final String tag){
+        pb.setVisibility(View.VISIBLE);
 
 
-        Call<QuestionObject> callq = api.getAnswers(FIRST_PAGE,PAGE_SIZE,SITE_NAME,tag);
+        Call<QuestionObject> callq = api.getAnswers(page_number,PAGE_SIZE,SITE_NAME,tag);
         callq.enqueue(new Callback<QuestionObject>() {
             @Override
             public void onResponse(Call<QuestionObject> call, Response<QuestionObject> response) {
@@ -274,6 +287,8 @@ public class QuestionListActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "No more items", Toast.LENGTH_LONG).show();
                 }
 
+                pb.setVisibility(View.GONE);
+
             }
 
             @Override
@@ -281,8 +296,6 @@ public class QuestionListActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Some Error Occured",Toast.LENGTH_SHORT).show();
             }
         });
-
-
 
     }
 
